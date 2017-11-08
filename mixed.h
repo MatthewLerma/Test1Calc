@@ -11,10 +11,10 @@ class mixed
         mixed();
         mixed(int whole);
         mixed(int n, int d);
-        mixed(int whole, int n = 0, int d = 1);
+//        mixed(int whole, int n = 0, int d = 1);
         mixed(double x);
     //destruct
-       ~mixed();
+//       ~mixed();
     //copy
         mixed(const fraction &other);
         mixed(const mixed &other);
@@ -29,8 +29,8 @@ class mixed
         mixed& operator*=(const mixed &other);
         mixed& operator/=(const mixed &other);
     //class member ops
-        mixed operator-() const; //Makes negative
-        mixed operator^(int x);
+//        mixed operator-() const; //Makes negative
+//        mixed operator^(int x);
 
 
     private:

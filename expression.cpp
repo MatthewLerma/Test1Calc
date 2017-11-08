@@ -30,10 +30,11 @@ void expression::copy(const expression &other)
     }
 }
 
-//bool expression::isOperator(const string &token) const
-//{
+bool expression::isOperator(const string &token) const
+{
 //    return token.find_first_of(operators) < token.size();
-//}
+    return true; //change this to real stuff
+}
 
 void expression::tokenize()
 {

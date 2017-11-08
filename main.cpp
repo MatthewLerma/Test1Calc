@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void normalizeInput(string input, string &command, string &index, string &expression);
+//void normalizeInput(string input, string &command, string &index, string &expression);
 void openInput(string &inName, ifstream &inFile, char *argv[]);
 void CommandLine(const char *title, int argc, char *argv[], ifstream &inFile, string &inName);
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
         else
         {
             again = true;
-            normalizeInput(input, command, index, expression);
+//            normalizeInput(input, command, index, expression);
             cout << endl << command << endl;
             cout << index << endl;
             cout << expression <<endl;

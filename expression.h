@@ -4,10 +4,10 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
-//#include "mixed.h"
+#include "mixed.h"
 //#include "toRPN.h"
 #include <vector>
-#include "fraction.h"
+//#include "fraction.h"
 
 struct term
 {
