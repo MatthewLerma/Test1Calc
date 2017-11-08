@@ -47,7 +47,7 @@ void expression::tokenize()
     {
         trim(toTokenize);
         fromChar[0] = toTokenize[0];
-        if(isOperator(fromChar))
+        if(fromChar == "+")
         {
             trim(fromChar);
             tokens.push_back(fromChar);
@@ -55,7 +55,7 @@ void expression::tokenize()
         }
         else
         {
-            pos = toTokenize.find_first_of(operators);
+            pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
             toTokenize =  pos > toTokenize.size() ? "" : toTokenize.substr(pos);
             tokens.push_back(token);
