@@ -60,7 +60,6 @@ void expression::tokenize()
         while ((pos = toTokenize.find("-", pos + 2)) < toTokenize.size())
             toTokenize.replace(pos,2,"+-");
     }
-    cout << toTokenize;
     while(!toTokenize.empty())
     {
         trim(toTokenize);
@@ -77,6 +76,7 @@ void expression::tokenize()
             pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
             toTokenize =  pos > toTokenize.size() ? "" : toTokenize.substr(pos);
+            //toTokenize.erase(pos,1);
             cout << "Tokenize: " << toTokenize << endl;
             cout << "Token: " << token << endl;
             tokens.push_back(token);
