@@ -49,7 +49,6 @@ bool expression::isOperator(const string &token) const
 
 void expression::tokenize()
 {
-    //str.replace(sizeofstringinputting(2), positionofreplacedchar, stringtoreplaceitwith)
     unsigned int pos = 0;
     tokens.clear();
     string toTokenize = inFix,
@@ -63,6 +62,7 @@ void expression::tokenize()
     while(!toTokenize.empty())
     {
         trim(toTokenize);
+        cout << toTokenize;
         fromChar[0] = toTokenize[0];
         if(fromChar == "+")
         {
@@ -71,7 +71,7 @@ void expression::tokenize()
             toTokenize.erase(0,1);
         }
 
-        else
+        else if ((toTokenize.find_first_of("+")) < toTokenize.size())
         {
             pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
@@ -81,16 +81,27 @@ void expression::tokenize()
             cout << "Token: " << token << endl;
             tokens.push_back(token);
         }
+        else
+        {
+            token = toTokenize;
+            cout << "Tokenize: " << toTokenize << endl;
+            cout << "Token: " << token << endl;
+            tokens.push_back(token);
+            toTokenize.clear();
+        }
     }
 
 }
 
 void expression::trim(string &item)
 {
+    int pos = 0;
     while(item[0] == ' ')
         item.erase(0,1);
     while(item[item.size()-1] == ' ')
         item.erase(item.size()-1);
+    while((pos = item.find_first_of(" ")) < item.size())
+        item.erase(pos,1);
 }
 
 
