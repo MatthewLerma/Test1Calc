@@ -16,9 +16,14 @@ mixed::mixed(int n, int d)
 
 }
 
-mixed::mixed(int whole, int n = 0, int d = 1)
+//mixed::mixed(int whole, int n = 0, int d = 1)
+//{
+//    value = whole;
+//}
+
+mixed::mixed(double x)
 {
-    value = whole;
+
 }
 
 mixed::mixed(const fraction &other)
@@ -59,7 +64,36 @@ void mixed::copy(const mixed &other)
     value = other.value;
 }
 
-mixed operator+(const mixed &x, const mixed &y)
+mixed&mixed::operator+=(const mixed &other)
 {
-    return x.value + y.value;
+    mixed a;
+    return a;
 }
+
+mixed&mixed::operator-=(const mixed &other)
+{
+    mixed a;
+    return a;
+}
+
+mixed&mixed::operator*=(const mixed &other)
+{
+    mixed a;
+    return a;
+}
+
+//mixed& operator/(const mixed &other)
+//{
+//    mixed a;
+//    return a;
+//}
+
+//mixed operator-() const;
+//{
+//    mixed a;
+//    return a;
+//}
+//mixed operator^(int x)
+//{
+
+//}

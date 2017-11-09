@@ -4,33 +4,39 @@
 
 using namespace std;
 
-void normalizeInput(string input, string &command, string &index, string &expression);
+//void normalizeInput(string input, string &command, string &index, string &expression);
 void openInput(string &inName, ifstream &inFile, char *argv[]);
 void CommandLine(const char *title, int argc, char *argv[], ifstream &inFile, string &inName);
 
 int main(int argc, char *argv[]) {
     bool again;
-    string input, command, index, expression, inName;
+    string input, command, index, inName;
+    expression Polynomial;
     ifstream inFile;
 
-    do
-    {
-        cout<<"INPUT: ";
-        getline(cin, input);
-        if (input == "")
-        {
-            again = false;
-        }
-        else
-        {
-            again = true;
-            normalizeInput(input, command, index, expression);
-            cout << endl << command << endl;
-            cout << index << endl;
-            cout << expression <<endl;
-        }
+    cout << "INPUT: ";
+    getline(cin,input);
+    Polynomial << input;
 
-    } while (again);
+
+//    do
+//    {
+//        cout<<"INPUT: ";
+//        getline(cin, input);
+//        if (input == "")
+//        {
+//            again = false;
+//        }
+//        else
+//        {
+//            again = true;
+//            normalizeInput(input, command, index, expression);
+//            cout << endl << command << endl;
+//            cout << index << endl;
+//            cout << expression <<endl;
+//        }
+
+//    } while (again);
 
 
     return 0;
