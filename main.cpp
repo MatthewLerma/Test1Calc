@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     ifstream inFile;
 
     cout << "INPUT: ";
-    cin >> input;
+    getline(cin,input);
     Polynomial << input;
 
 

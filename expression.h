@@ -7,6 +7,7 @@
 #include "mixed.h"
 //#include "toRPN.h"
 #include <vector>
+#include <map>
 //#include "fraction.h"
 
 struct term
@@ -19,7 +20,9 @@ class expression
     public:
         expression();
         expression(const expression &other);
-        ~expression();                                             //Deconstructor
+        ~expression();                        //Deconstructor
+
+        expression(const string  &infix); // Used for maps
 
         expression& operator=(const expression &other);
         expression& operator<<(const string &input);
@@ -38,11 +41,13 @@ class expression
         vector<term> terms;
         vector<string> tokens;
         string inFix,postFix, operators;
+        map<string, int> precedence;
+        void expression::loadMaps();
         void copy(const expression &other);
         bool isOperator(const string &token) const;
         void expression::tokenize();
         void expression::trim(string &item);
-        void expression::Destroy();
+        void expression::Destroy();  //still needs to be fixed
 };
 
 #endif // EXPRESSION_H

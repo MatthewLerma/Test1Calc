@@ -1,8 +1,20 @@
 #include "expression.h"
 
-expression::expression()
+expression::expression() : operators("+-")
 {
+    loadMaps();
 }
+
+expression::expression(const string  &infix): operators("+-")
+{
+    inFix = infix;
+    loadMaps();
+}
+void expression::loadMaps()
+{
+    precedence["+"] = precedence["-"] = 1;
+}
+
 
 expression::expression(const expression &other)
 {
@@ -32,17 +44,23 @@ void expression::copy(const expression &other)
 
 bool expression::isOperator(const string &token) const
 {
-//    return token.find_first_of(operators) < token.size();
-    return true; //change this to real stuff
+    return token.find_first_of(operators) < token.size();
 }
 
 void expression::tokenize()
 {
-    unsigned int pos;
+    //str.replace(sizeofstringinputting(2), positionofreplacedchar, stringtoreplaceitwith)
+    unsigned int pos = 0;
     tokens.clear();
     string toTokenize = inFix,
            token,
            fromChar("A");
+    if (toTokenize.find_first_of("-") < toTokenize.size())
+    {
+        while ((pos = toTokenize.find("-", pos + 2)) < toTokenize.size())
+            toTokenize.replace(pos,2,"+-");
+    }
+    cout << toTokenize;
     while(!toTokenize.empty())
     {
         trim(toTokenize);
@@ -53,35 +71,17 @@ void expression::tokenize()
             tokens.push_back(fromChar);
             toTokenize.erase(0,1);
         }
+
         else
         {
             pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
             toTokenize =  pos > toTokenize.size() ? "" : toTokenize.substr(pos);
+            cout << "Tokenize: " << toTokenize << endl;
+            cout << "Token: " << token << endl;
             tokens.push_back(token);
         }
     }
-//    tokens.clear();
-//    string temp;
-//    int pos = expression.find_first_of('+')
-
-//    temp = expression.substr(0, pos);
-
-//    while(!expression.empty())
-//    {
-//        if(expression.find('+'))
-//        {
-//            expression.erase(0, pos);
-//            trim(temp);
-//            tokens.push_back(temp);
-//        }
-//        else
-//        {
-//            trim(expression);
-//            tokens.push_back(expression);
-//            expression.clear();
-//        }
-//    }
 
 }
 
