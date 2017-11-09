@@ -62,7 +62,10 @@ void expression::tokenize()
     while(!toTokenize.empty())
     {
         trim(toTokenize);
-        cout << toTokenize;
+        for (unsigned int i = 0; i < toTokenize.size(); ++i)
+        {
+            toTokenize[i] = toupper(toTokenize[i]);
+        }
         fromChar[0] = toTokenize[0];
         if(fromChar == "+")
         {
@@ -111,6 +114,18 @@ expression& expression::operator<<(const string &input)
     postFix.clear();
     tokens.clear();
     tokenize();
+    for (unsigned int i = 0; i < tokens.size(); ++i)
+    {
+        if (tokens[i] == "+")
+        {
+            tokens.erase(tokens.begin()+(i));
+        }
+    }
+
+    for (unsigned int i = 0; i < tokens.size(); ++i)
+    {
+
+    }
     return *this;
 }
 
