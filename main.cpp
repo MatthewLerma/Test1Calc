@@ -4,6 +4,19 @@
 
 using namespace std;
 
+//make a map to save expressions as a certain variable
+
+//make an expression exists function: for if they try to print out "print b"
+
+//function for checking if they input "LET EVALUATE..."
+//make a for loop that checks if a string is equal to their input, and
+//increment an integer as you go along
+//once it finds the correct statement, use that integer in a switch statement
+
+//in order to have only one input
+//need a function that takes in "istream" so whether it takes in cin or a filestream, it does
+//certain things
+
 //void normalizeInput(string input, string &command, string &index, string &expression);
 void openInput(string &inName, ifstream &inFile, char *argv[]);
 void CommandLine(const char *title, int argc, char *argv[], ifstream &inFile, string &inName);

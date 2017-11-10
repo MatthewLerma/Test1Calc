@@ -1,4 +1,5 @@
 #include "expression.h"
+#include <sstream>
 
 expression::expression() : operators("+-")
 {
@@ -110,6 +111,9 @@ void expression::trim(string &item)
 
 expression& expression::operator<<(const string &input)
 {
+    int pos = 0;
+    fraction co, po;
+    stringstream ss;
     inFix = input;
     postFix.clear();
     tokens.clear();
@@ -124,7 +128,42 @@ expression& expression::operator<<(const string &input)
 
     for (unsigned int i = 0; i < tokens.size(); ++i)
     {
+        if ((pos = tokens[i].find("X", pos)) < tokens[i].size())
+        {
+            if((pos = tokens[i].find("^")) < tokens[i].size())
+            {
+                ss << tokens[i].substr(0,pos);
+                ss >> co;
+                ss.clear();
+                ss << tokens[i].substr(pos+1);
+                ss >> po;
+                cout << po;
+                ss.clear();
+                terms.push_back(term(co,po));
+                cout << terms[i] << endl;
+            }
+            else
+            {
+                pos = tokens[i].find("X", pos);
+                ss << tokens[i].substr(0,pos);
+                ss >> co;
+                ss.clear();
+                po = 1;
+                terms.push_back(term(co,po));
+                cout << terms[i] << endl;
+            }
+            //still need to add something for non x powers (5x) with no ^
 
+        }
+        else
+        {
+            ss << tokens[i];
+            ss >> co;
+            ss.clear();
+            po = 0;
+            terms.push_back(term(co,po));
+            cout << terms[i] << endl;   //whole code block not working, fix
+        }
     }
     return *this;
 }

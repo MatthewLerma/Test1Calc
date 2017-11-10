@@ -13,6 +13,19 @@
 struct term
 {
     fraction coef,power;
+    term(fraction &c, fraction &p)
+    {
+        coef = c;
+        power = p;
+    }
+
+    friend
+    ostream& operator<<(ostream &out, const term &ter)
+    {
+        out << ter.coef;
+        out << ter.power;
+        return out;
+    }
 };
 
 class expression
