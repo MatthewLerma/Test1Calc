@@ -80,15 +80,11 @@ void expression::tokenize()
             pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
             toTokenize =  pos > toTokenize.size() ? "" : toTokenize.substr(pos);
-            cout << "Tokenize: " << toTokenize << endl;
-            cout << "Token: " << token << endl;
             tokens.push_back(token);
         }
         else
         {
             token = toTokenize;
-            cout << "Tokenize: " << toTokenize << endl;
-            cout << "Token: " << token << endl;
             tokens.push_back(token);
             toTokenize.clear();
         }
@@ -110,13 +106,19 @@ void expression::trim(string &item)
 
 expression& expression::operator<<(const string &input)
 {
-    int pos = 0;
-    fraction co, po;
-    stringstream ss;
     inFix = input;
     postFix.clear();
     tokens.clear();
     tokenize();
+    vectorizetokens();
+    return *this;
+}
+
+void expression::vectorizetokens()
+{
+    int pos = 0;
+    fraction co, po;
+    stringstream ss;
     for (unsigned int i = 0; i < tokens.size(); ++i)
     {
         if (tokens[i] == "+")
@@ -154,7 +156,6 @@ expression& expression::operator<<(const string &input)
                 pos = 0;
                 terms.push_back(term(co,po));
             }
-            //still need to add something for non x powers (5x) with no ^
 
         }
         else if ((pos = tokens[i].find("X", pos)) > tokens[i].size())
@@ -169,8 +170,10 @@ expression& expression::operator<<(const string &input)
         }
     }
     for (unsigned int i = 0; i < terms.size(); ++i)
-        cout << terms[i];
-    return *this;
+        cout << "coeff:" << terms[i].coef << endl
+             << "power: " <<terms[i].power << endl;
+   cout << "end of terms." << endl
+        << "this code block located on line " << __LINE__ << " of expression.cpp" << endl;
 }
 
 //bool goodExpression()
@@ -192,6 +195,8 @@ expression& expression::operator<<(const string &input)
 //{
 
 //}
+
+
 
 //Used to set the co-efficient to 1 of variables with none, or only a negative sign
 void expression::Nocoeffcheck(string &token)

@@ -40,6 +40,7 @@ class expression
         expression& operator=(const expression &other);
         expression& operator<<(const string &input);
         void expression::Nocoeffcheck(string &token);
+        void expression::vectorizetokens();
 //        bool goodExpression();
         expression& derivative(unsigned int x = 1);
 //        fraction evaluateAt(const fraction &value);
