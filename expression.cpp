@@ -80,7 +80,6 @@ void expression::tokenize()
             pos = toTokenize.find_first_of("+");
             token = toTokenize.substr(0,pos);
             toTokenize =  pos > toTokenize.size() ? "" : toTokenize.substr(pos);
-            //toTokenize.erase(pos,1);
             cout << "Tokenize: " << toTokenize << endl;
             cout << "Token: " << token << endl;
             tokens.push_back(token);
@@ -130,41 +129,47 @@ expression& expression::operator<<(const string &input)
     {
         if ((pos = tokens[i].find("X", pos)) < tokens[i].size())
         {
+            Nocoeffcheck(tokens[i]);
             if((pos = tokens[i].find("^")) < tokens[i].size())
             {
                 ss << tokens[i].substr(0,pos);
                 ss >> co;
+                ss.str("");
                 ss.clear();
                 ss << tokens[i].substr(pos+1);
                 ss >> po;
-                cout << po;
+                ss.str("");
                 ss.clear();
+                pos = 0;
                 terms.push_back(term(co,po));
-                cout << terms[i] << endl;
             }
             else
             {
                 pos = tokens[i].find("X", pos);
                 ss << tokens[i].substr(0,pos);
                 ss >> co;
+                ss.str("");
                 ss.clear();
                 po = 1;
+                pos = 0;
                 terms.push_back(term(co,po));
-                cout << terms[i] << endl;
             }
             //still need to add something for non x powers (5x) with no ^
 
         }
-        else
+        else if ((pos = tokens[i].find("X", pos)) > tokens[i].size())
         {
             ss << tokens[i];
             ss >> co;
+            ss.str("");
             ss.clear();
             po = 0;
+            pos = 0;
             terms.push_back(term(co,po));
-            cout << terms[i] << endl;   //whole code block not working, fix
         }
     }
+    for (unsigned int i = 0; i < terms.size(); ++i)
+        cout << terms[i];
     return *this;
 }
 
@@ -188,6 +193,20 @@ expression& expression::operator<<(const string &input)
 
 //}
 
+//Used to set the co-efficient to 1 of variables with none, or only a negative sign
+void expression::Nocoeffcheck(string &token)
+{
+    int pos = token.find("X");
+    if (pos == 0)
+    {
+        token = "1" + token;
+    }
+    else if (token.substr(0,pos) == "-")  //This part is sketchy, keep an eye on it
+    {
+        token.replace((pos-1),2,"-1");
+    }
+
+}
 
 expression& expression::derivative(unsigned int x)
 {

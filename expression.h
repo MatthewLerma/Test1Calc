@@ -39,6 +39,7 @@ class expression
 
         expression& operator=(const expression &other);
         expression& operator<<(const string &input);
+        void expression::Nocoeffcheck(string &token);
 //        bool goodExpression();
         expression& derivative(unsigned int x = 1);
 //        fraction evaluateAt(const fraction &value);
