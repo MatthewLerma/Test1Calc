@@ -105,6 +105,7 @@ void expression::trim(string &item)
         item.erase(item.size()-1);
     while((pos = item.find_first_of(" ")) < item.size())
         item.erase(pos,1);
+
 }
 
 
