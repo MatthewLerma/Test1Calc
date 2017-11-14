@@ -24,11 +24,16 @@ using namespace std;
 void openInput(const string &name, ifstream &in);
 void openOutput(const char *title, const string &name, ofstream &out);
 void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName);
+void initializeMap(map<char, expression> &map);
+void loadMap(ifstream &in, map<char, expression> &themap);
+void saveMap(ofstream &out, map<char, expression> &themap);
+string getCommand(string &input);
+string getFileName(string title);
+
 //void commmandLet(string input, string &index, string &expression, bool &valid);
 //void commmandEval(string input, string &index, bool &valid);
 //void commmandPrint(string input, string &index, bool &valid, map<char, expression> store);
-//void trim(string &item);
-
+void trim(string &item);
 
 int main(int argc, char *argv[])
 {
@@ -39,6 +44,9 @@ int main(int argc, char *argv[])
     ifstream inFile;
     ofstream outFile;
     map<char, expression> map;
+    initializeMap(map);
+    loadMap(inFile, map);
+
 
     CommandLine(argc, argv, inFile, inName, outFile, outName);
 
@@ -88,6 +96,71 @@ int main(int argc, char *argv[])
     return 0;
 }
 
+void trim(string &item)
+{
+    while(item[0] == ' ')
+        item.erase(0,1);
+    while(item[item.size()-1] == ' ')
+        item.erase(item.size()-1);
+}
+
+string getFileName(string title)
+{
+    string name;
+    cout<<title;
+    cin>>name;
+    cin.clear();
+    cin.ignore(255, '\n');
+    return name;
+}
+
+string getCommand(string &input)
+{
+    string instruction;
+    int pos = input.find_first_of(' ');
+    instruction = input.substr(0,pos);
+    input.erase(0,pos);
+    trim(instruction);
+    for (int i = 0; i < instruction.size(); i++)
+        instruction[i] = toupper(instruction[i]);
+    return instruction;
+}
+
+void loadMap(ifstream &in, map<char, expression> &themap)
+{
+    string temp, name, index;
+    int pos;
+    expression x;
+    name = getFileName("Please enter input file name: ");
+    openInput(name,in);
+    map<char,expression>::iterator i;
+
+    for(i= themap.begin(); i != themap.end(); ++i)
+    {
+        getline(in,temp);
+        index = getCommand(temp);
+        pos = temp.find_first_of('=');
+        temp.substr(pos+1, string::npos);
+        while(temp[0] == ' ' || temp[0] == '=')
+            temp.erase(0,1);
+        x<<temp;
+        themap[i->first] = x;
+        cout<<i->first<<" = "<<x<<endl;
+        x.clear();
+    }
+}
+
+void saveMap(ofstream &out, map<char, expression> &themap)
+{
+    string name;
+    name = getFileName("Please enter an output file name: ");
+    openOutput(".exp" ,name, out);
+    for (map<char,expression>::iterator i=themap.begin(); i!=themap.end(); ++i){
+        out<<i->first<<" = "<<i->second<<endl;
+    }
+
+}
+
 //void commmandLet(string input, string &index, string &expression, bool &valid)
 //{
 //    int pos;
@@ -110,8 +183,6 @@ int main(int argc, char *argv[])
 //    index = input[0];
 //    index[0] = toupper(index[0]);
 //    cout << index << " = " << store[index[0]] << endl;
-
-
 
 
 void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName)
@@ -179,7 +250,6 @@ void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstr
         cout << "Too many command line arguments, program will now exit.";
         exit(1);
     }
-
 }
 
 void openInput(const string &name, ifstream &in){
@@ -207,8 +277,7 @@ void openInput(const string &name, ifstream &in){
     }while(again);
 }
 
-
-void openOutput(const char *title,const string &name, ofstream &out){
+void openOutput(const char *title, const string &name, ofstream &out){
     string extension, answer, temp;
     char c;
     ifstream in;
@@ -246,7 +315,8 @@ void openOutput(const char *title,const string &name, ofstream &out){
     }
 }
 
-void mapLoad(map<char, expression> &map){
+void initializeMap(map<char, expression> &map)
+{
     map['A'];
     map['B'];
     map['C'];

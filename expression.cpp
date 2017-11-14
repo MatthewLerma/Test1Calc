@@ -16,6 +16,10 @@ void expression::loadMaps()
     precedence["+"] = precedence["-"] = 1;
 }
 
+void expression::clear()
+{
+    terms.clear();
+}
 
 expression::expression(const expression &other)
 {

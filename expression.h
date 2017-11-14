@@ -58,7 +58,8 @@ class expression
         expression& operator<<(const string &input);
         void Nocoeffcheck(string &token);
         void vectorizetokens();
-//        bool goodExpression();
+        void clear();
+//      bool goodExpression();
         expression& derivative(unsigned int x = 1);
 //        fraction evaluateAt(const fraction &value);
 
