@@ -22,8 +22,8 @@ using namespace std;
 //certain things
 
 void openInput(const string &name, ifstream &in);
-void openOutput(const string &name, ofstream &out);
-void CommandLine(const char *title, int argc, char *argv[], ifstream &inFile, string &inName);
+void openOutput(const char *title, const string &name, ofstream &out);
+void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName);
 //void commmandLet(string input, string &index, string &expression, bool &valid);
 //void commmandEval(string input, string &index, bool &valid);
 //void commmandPrint(string input, string &index, bool &valid, map<char, expression> store);
@@ -34,19 +34,24 @@ int main(int argc, char *argv[])
 {
 
     bool again;
-    string input, number, command, index, exp, inName;
+    string input, number, command, index, exp, inName, outName;
     Expression e;
     ifstream inFile;
+    ofstream outFile;
     map<char, expression> map;
 
-    cout << "INPUT: ";
-    getline(cin,input);
-    e.init(input);
-    e.infixToPostfix();
-    cout << "\nWhere do you want to evaluate it?: ";
-    cin >> number;
-    //string ans = ;
-    cout << e.evaluate(number);
+    CommandLine(argc, argv, inFile, inName, outFile, outName);
+
+//    cout << "INPUT: ";
+//    getline(cin,input);
+//    e.init(input);
+//    e.infixToPostfix();
+//    cout << "\nWhere do you want to evaluate it?: ";
+//    cin >> number;
+//    //string ans = ;
+//    cout << e.evaluate(number);
+
+
 //    do
 //    {
 //        cout<<"INPUT: ";
@@ -106,60 +111,70 @@ int main(int argc, char *argv[])
 //    index[0] = toupper(index[0]);
 //    cout << index << " = " << store[index[0]] << endl;
 
-//}
-
-//void commmandEval(string input, string &index, bool &valid)
-//{
-//    fraction x;
-//    string temp;
-//    trim(input);
-//    index = toupper(input[0]);
-//    input.erase(0,1);
-//    int pos = input.find_first_of('(');
-//    int end = input.rfind(')');
-//    temp = input.substr(pos+1, end-1);
-
-//    cout<<index<<"("<<temp<<")"<<" = "<<"EVALUATION"<<endl;
 
 
-//}
 
-void trim(string &item)
+void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName)
 {
-    unsigned int pos = 0;
-    while(item[0] == ' ')
-        item.erase(0,1);
-    while(item[item.size()-1] == ' ')
-        item.erase(item.size()-1);
-}
-
-void CommandLine(const char *title, int argc, char *argv[], ifstream &inFile, string &inName)
-{
+    string temp;
     if (argc == 1)
     {
-        if (argv[0][1] == '/h' || argv[0][1] == '/?')
-        {
-            cout << "In order to properly utilize the command line, you must put in either "
-                 << "1 or 2 arguments" << endl << endl
-                 << "If you are inputting 1 argument into the command line, it must contain the "
-                 << "filename of the file you wish to load into the program." << endl
-                 << "This filename must include the extension of the file as well (e.g. .exp)" << endl << endl
-                 << "If you are inputting 2 arguments the first of the two must be either EXECUTE or RECORD" << endl
-                 << "followed by the second argument being the previously stated filename in correct format" << endl;
-            exit(0);
-        }
-        else
-        {
-            //inFile = argv[1];
-            //openOutput(inFile, out);
-        }
-
+        return;
     }
     else if (argc == 2)
     {
+        if (argv[1][0] == '/')
+        {
+            if (argv[1][1] == 'h' || argv[1][1] == '?')
+            {
+                cout << "In order to properly utilize the command line, you must put in either " << endl
+                     << "1 or 2 arguments" << endl << endl
+                     << "If you are inputting 1 argument into the command line, it must contain the " << endl
+                     << "filename of the file you wish to load into the program." << endl
+                     << "This filename must include the extension of the file as well (e.g. .exp)" << endl << endl
+                     << "If you are inputting 2 arguments the first of the two must be either EXECUTE or RECORD" << endl
+                     << "followed by the second argument being the previously stated filename in correct format" << endl;
+                exit(0);
+            }
+            else
+            {
+                cout << "Invalid command line parameter\n";
+                exit(1);
+            }
+        }
+        else
+        {
+            outName = argv[1];
+            openOutput(".exp",outName, outFile);
+        }
 
     }
-    else if (argc >= 3)
+    else if (argc == 3)
+    {
+        temp = argv[1];
+        for (int i = 0; i < temp.size(); ++i)
+        {
+            toupper(temp[i]);
+        }
+        if (temp == "EXECUTE")
+        {
+            outName = argv[2];
+            cout << outName;
+            cout << "Execute successfully read" << endl;
+        }
+        else if (temp == "RECORD")
+        {
+            inName = argv[2];
+            cout << inName;
+            cout << "Record successfully read" << endl;
+        }
+        else
+        {
+            cout << "Invalid first parameter";
+            exit(1);
+        }
+    }
+    else if (argc >= 4)
     {
         cout << "Too many command line arguments, program will now exit.";
         exit(1);
@@ -172,10 +187,10 @@ void openInput(const string &name, ifstream &in){
     bool again;
     if(name.find(".") > name.size())
     {
-        cout<<"Please enter a file extension (press enter for .txt): ";
+        cout<<"Please enter a file extension (press enter for .spt): ";
         getline(cin, extension);
         if(extension.empty())
-            extension = ".txt";
+            extension = ".spt";
     }
     do
     {
@@ -186,30 +201,42 @@ void openInput(const string &name, ifstream &in){
         {
             again = true;
             cout<<"That file does not exist for input"<<endl
-                <<"Please enter another file name: ";
+                <<"Please enter another file name with extension: ";
             cin>>temp;
         }
     }while(again);
 }
 
 
-void openOutput(const string &name, ofstream &out){
+void openOutput(const char *title,const string &name, ofstream &out){
     string extension, answer, temp;
+    char c;
     ifstream in;
     if(name.find(".") > name.size())
     {
-        cout<<"Please enter a file extension (press enter for .txt): ";
+        cout<<"Please enter a file extension (press enter for .exp): ";
         getline(cin, extension);
         if(extension.empty())
-            extension = ".txt";
+            extension = title;
     }
     temp = name + extension;
     in.open(temp.c_str());
-    in.close();
 
     if(!in.fail())
     {
-        out.open(temp.c_str(), ios::binary);
+        in.clear();
+        cout << "File already exists, (O)verwrite, or (E)xit?: ";
+        cin >> answer;
+        c = toupper(answer[0]);
+        if (c == 'O')
+        {
+            out.open(temp.c_str(), ios::binary);
+        }
+        else
+        {
+            cout << "File already exists\n";
+            exit(0);
+        }
 
     } else
     {
