@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include <stack>
 #include "mixed.h"
 //#include "toRPN.h"
 #include <vector>
@@ -28,6 +29,22 @@ struct term
     }
 };
 
+class Term
+{
+    private:
+    string e;
+    string c;
+    string v;
+    string p;
+
+    public:
+
+    Term();
+
+    void init(const string &strTerm);
+    float evaluate(string val);
+};
+
 class expression
 {
     public:
@@ -39,8 +56,8 @@ class expression
 
         expression& operator=(const expression &other);
         expression& operator<<(const string &input);
-        void expression::Nocoeffcheck(string &token);
-        void expression::vectorizetokens();
+        void Nocoeffcheck(string &token);
+        void vectorizetokens();
 //        bool goodExpression();
         expression& derivative(unsigned int x = 1);
 //        fraction evaluateAt(const fraction &value);
@@ -57,12 +74,43 @@ class expression
         vector<string> tokens;
         string inFix,postFix, operators;
         map<string, int> precedence;
-        void expression::loadMaps();
+        void loadMaps();
         void copy(const expression &other);
         bool isOperator(const string &token) const;
-        void expression::tokenize();
-        void expression::trim(string &item);
-        void expression::Destroy();  //still needs to be fixed
+        void tokenize();
+        void trim(string &item);
+        void Destroy();  //still needs to be fixed
+};
+
+class Character {
+    public:
+    static bool isDigit(char c) {
+        return (isdigit(c) || (c=='-') || (c=='.'));
+    }
+    static bool isCharacter(char c) {
+        return isalpha(c);
+    }
+    static bool isPower(char c) {
+        return c == '^';
+    }
+};
+
+class estack : public std::stack<string> {
+public:
+    using std::stack<string>::c; // expose the container
+};
+
+class Expression {
+    public:
+    string e;      // original expression
+    estack postfix; // parsed to postfix notation
+    Expression();
+    void init(string expr);
+    int priority(string oprtr);
+    bool isOperator(string oprtr);
+    float compute(string oprtr, string lOprnd, string rOprnd, string vValue);
+    string evaluate(string vValue);
+    void infixToPostfix();
 };
 
 #endif // EXPRESSION_H

@@ -144,5 +144,3 @@ void fraction::reduce()
         denom = -denom;
     }
 }
-
-

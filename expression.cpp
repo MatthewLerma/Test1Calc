@@ -230,3 +230,170 @@ void expression::Destroy()
     for(unsigned int i = 0; i < terms.size(); ++i)
         terms.erase(terms.begin());
 }
+
+Term::Term(void) {}
+
+void Term::init(const string &strTerm)
+{
+        e = strTerm;
+        int i = 0; int j = 0; int k = 0;
+
+        for (i=0; i<strTerm.length(); i++){
+            if (Character::isDigit(strTerm[i])) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        c = strTerm.substr(0,i);
+        if (i==strTerm.length()) {
+            return;
+        }
+
+        for (j=i;j<strTerm.length();j++){
+            if (Character::isCharacter(strTerm[j])) {
+                continue;
+            } else {
+                break;
+            }
+        }
+        v = strTerm.substr(i,j);
+        if (j==strTerm.length()) {
+            return;
+        }
+        if (!Character::isPower(strTerm[j]) )
+          return;
+        j++;
+        for(k=j;k<strTerm.length();k++){
+          if (Character::isDigit(strTerm[k]))
+              continue;
+          else
+            break;
+        }
+        p = strTerm.substr(j,k);
+    }
+
+    float Term::evaluate(string val = "") {
+        float _v = 1.0;
+        float _p = 1.0;
+        float _c = 1.0;
+        if (c.length() > 0) {
+            _c = stof(this->c);
+        }
+        if ( (val.length() > 0) && (v.length() > 0)) {
+            _v = stof(val);
+        }
+        if (this->p.length() > 0) {
+            _p = stof(p);
+        }
+
+        return (_c) * pow(_v,_p);
+    }
+
+    Expression::Expression(void) {}
+
+    void Expression::init(string expr){
+        e = expr;
+    }
+
+    int Expression::priority(string oprtr){
+        if ((oprtr == " + ") || (oprtr == " - ")) {
+            return 1;
+        }
+        if ((oprtr == " * ") || (oprtr == " / ")) {
+            return 2;
+        }
+    }
+
+    bool Expression::isOperator(string oprtr){
+        if ((oprtr == " + ") || (oprtr == " - ") || (oprtr == " * ") || (oprtr == " / ")) {
+            return true;
+        }
+        return false;
+    }
+
+    float Expression::compute(string oprtr, string lOprnd, string rOprnd, string vValue = ""){
+        Term lTerm;
+        Term rTerm;
+        lTerm.init(lOprnd);
+        rTerm.init(rOprnd);
+        if (oprtr == " + ") {
+            return lTerm.evaluate(vValue) + rTerm.evaluate(vValue);
+        }
+        if (oprtr == " - ") {
+            return lTerm.evaluate(vValue) - rTerm.evaluate(vValue);
+        }
+        if (oprtr == " * ") {
+            return lTerm.evaluate(vValue) * rTerm.evaluate(vValue);
+        }
+        if (oprtr == " / ") {
+            return lTerm.evaluate(vValue) / rTerm.evaluate(vValue);
+        }
+        return 0;
+    }
+
+    string Expression::evaluate(string vValue){
+      stack<string> eStack;
+
+      for(int i=0; i<postfix.size(); i++){
+        if (isOperator(postfix.c[i])){
+          string b = eStack.top();
+          eStack.pop();
+          string a = eStack.top();
+          eStack.pop();
+          eStack.push(to_string(compute(postfix.c[i], a, b, vValue )));
+        } else {
+          eStack.push(postfix.c[i]);
+        }
+      }//end of for
+
+      string retVal = eStack.top();
+      eStack.pop();
+      return retVal;
+    }
+
+    void Expression::infixToPostfix()
+    {
+      string t = "";  //current token
+      estack oStack; //temp operator stack
+
+      for (int i=0; i<e.length(); i++) {
+        t += e[i];
+
+        if (t.length() < 3) {
+          continue;
+        }
+
+        string oprtr = t.substr(t.length()-3,t.length());
+        string operand = t.substr(0,t.length()-3);
+
+        if (!isOperator(oprtr)){
+          continue;
+        }
+
+        int ps = 1;
+        int poStack = 1;
+
+        postfix.push(operand);
+
+        while(!oStack.empty()){
+          //Till the time stack's top operator greater than equal to infixStr operator than add to postfixStr else break
+          if(priority(oStack.top()) >= priority(oprtr)){
+            postfix.push(oStack.top());
+            oStack.pop();
+          } else {
+            break;
+          }
+        }//end of while
+        //push the current infixStr operator to stack
+        oStack.push(oprtr);
+        //this.postfix.push(operand);
+        t = "";
+      }//end of for
+
+      postfix.push(t);
+      while(!oStack.empty()){
+        postfix.push(oStack.top());
+        oStack.pop();
+      }//end of while
+    }

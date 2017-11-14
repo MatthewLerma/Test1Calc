@@ -35,7 +35,7 @@ class mixed
 
     private:
         fraction value;
-        void mixed::copy(const mixed &other);
+        void copy(const mixed &other);
 };
 
 #endif // MIXED_H
