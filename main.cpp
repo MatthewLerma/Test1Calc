@@ -5,187 +5,221 @@
 #include <map>
 #include <iostream>
 #include <fstream>
+#include <iterator>
 
 using namespace std;
 
-//make a map to save expressions as a certain variable
-
-//make an expression exists function: for if they try to print out "print b"
-
-//function for checking if they input "LET EVALUATE..."
-//make a for loop that checks if a string is equal to their input, and
-//increment an integer as you go along
-//once it finds the correct statement, use that integer in a switch statement
-
-//in order to have only one input
-//need a function that takes in "istream" so whether it takes in cin or a filestream, it does
-//certain things
-
 void openInput(const string &name, ifstream &in);
-void openOutput(const char *title, const string &name, ofstream &out);
-void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName);
-void initializeMap(map<char, expression> &map);
-void loadMap(ifstream &in, map<char, expression> &themap);
-void saveMap(ofstream &out, map<char, expression> &themap);
-string getCommand(string &input);
-string getFileName(string title);
+void openOutput(const char *title, string &name, ofstream &out);
+void CommandLine(int argc, char *argv[],string &command, bool &recording, ifstream &inFile, string &inName, ofstream &outFile, string &outName, string &input, string &index, map<char, expression> &themap);
+string CommandCheck(string &input);
+bool IndexExist(string &index,map<char, expression> &themap);
+void HandleCommands(string &command, string &input, string &index,ifstream &inFile, string &inName, ofstream &outFile, string &outName, map<char, expression> &themap);
+void LetHandle(string &input, string &index, map<char, expression> &themap);
+void PrintHandle(string &input, string &index,map<char, expression> &themap);
+fraction EvalHandle(string &input, string &index,map<char, expression> &themap);
+void getInput(istream &in, bool recording, ifstream &inFile, string &inName, ofstream &outFile, string &outName, string &input, string &index, map<char, expression> &themap);
 
-//void commmandLet(string input, string &index, string &expression, bool &valid);
-//void commmandEval(string input, string &index, bool &valid);
-//void commmandPrint(string input, string &index, bool &valid, map<char, expression> store);
+void LoadHandle(ifstream &inFile, string &inName, map<char, expression> &themap);
+void SaveHandle(ofstream &outFile, string &outName , map<char, expression> &themap);
+
+void ExecuteHandle(string &command, string &input, string &index, ifstream &inFile, string &inName , ofstream &outFile, string &outName, map<char, expression> &themap);
+void RecordHandle(ofstream &outFile, string &input);
+
 void trim(string &item);
 
 int main(int argc, char *argv[])
 {
 
-    bool again;
+    bool again = true, recording = false;
     string input, number, command, index, exp, inName, outName;
-    Expression e;
     ifstream inFile;
     ofstream outFile;
-    map<char, expression> map;
-    initializeMap(map);
-    loadMap(inFile, map);
+    map<char, expression> themap;
+    expression a,b,c;
+    CommandLine(argc, argv,command, recording, inFile, inName, outFile, outName, input, index, themap);
 
-
-    CommandLine(argc, argv, inFile, inName, outFile, outName);
-
-//    cout << "INPUT: ";
-//    getline(cin,input);
-//    e.init(input);
-//    e.infixToPostfix();
-//    cout << "\nWhere do you want to evaluate it?: ";
-//    cin >> number;
-//    //string ans = ;
-//    cout << e.evaluate(number);
-
-
-//    do
-//    {
-//        cout<<"INPUT: ";
-//        getline(cin, input);
-//        again = true;
-//        if (input == "")
-//        {
-//            again = false;
-//        }
-//        else if (command == "LET")
-//        {
-//           commmandLet(input, index, exp, again);
-//           Polynomial << exp;
-//           cout << index << " = " << Polynomial << endl;
-//           store[index[0]] = Polynomial;
-//       }
-//       else if (command == "EVAL")
-//       {
-//           commmandPrint(input, index, again, store);
-//           commmandEval(input, index, again);
-//       }
-//       else if (command == "PRINT")
-//       {
-//           commmandPrint(input, index, again, store);
-//       }
-//       else
-//       {
-//            cout << "\nInvalid command, please try again";
-//            again = true;
-//       }
-//    }
-//    while (again);
+    do
+    {
+        cout << "INPUT: ";
+        getInput(cin,recording, inFile, inName, outFile, outName, input ,index, themap);
+    }while(again);
+//    map<char,expression>::iterator it;
+//    for(it = themap.begin(); it != themap.end(); ++it)
+//        cout<<it->first<<" = "<<it->second<<endl;
 
     return 0;
 }
 
+void getInput(istream &in, bool recording, ifstream &inFile, string &inName, ofstream &outFile, string &outName, string &input, string &index, map<char, expression> &themap)
+{
+    string command;
+    if (&in == &cin)
+    {
+        getline(cin, input);
+        if (input == "")
+            return;
+        if (recording)
+        {
+            cout << "Input in recording: " << input << endl;
+            RecordHandle(outFile,input);
+        }
+        command = CommandCheck(input);
+        HandleCommands(command,input,index, inFile, inName, outFile, outName, themap);
+    }
+    else
+    {
+        //file input activated when function called by loading a file
+        //getline(inFile,placetoputit) for this, where inFile is from ifstream inFile
+//        while (getline(inFile,))
+
+    }
+    return;
+}
+
+bool IndexExist(string &index,map<char, expression> &themap)
+{
+    bool exists = false;
+    map<char,expression>::iterator it;
+    for(it = themap.begin(); it != themap.end(); ++it)
+        if(index[0] == (it->first))
+        {
+            exists = true;
+        }
+    return exists;
+}
+
+string CommandCheck(string &input)
+{
+    int pos = 0;
+    string command;
+    for (unsigned int i = 0; i < input.size(); ++i)
+    {
+        input[i] = toupper(input[i]);
+    }
+    pos = input.find_first_of(" ");
+    command = input.substr(0,pos);
+    input.erase(0,pos);
+    trim(input);
+    return command;
+}
+
+void HandleCommands(string &command, string &input, string &index, ifstream &inFile, string &inName, ofstream &outFile, string &outName, map<char, expression> &themap)
+{
+    if (command == "LET")
+    {
+        LetHandle(input, index, themap);
+    }
+    else if (command == "EVAL")
+    {
+        EvalHandle(input, index, themap);
+    }
+    else if (command == "PRINT")
+    {
+        PrintHandle(input, index, themap);
+    }
+    else if (command == "LOAD")
+    {
+        inName = input;
+        LoadHandle(inFile,inName,themap);
+    }
+    else if (command == "SAVE")
+    {
+        outName = input;
+        SaveHandle(outFile,outName, themap);
+    }
+    return;
+}
+
+void LetHandle(string &input, string &index,map<char, expression> &themap)
+{
+    expression temp;
+    string indexCheck;
+    int pos = 0, derivativecount = 0;
+    trim(input);
+    pos = input.find_first_of("=");
+    index = input.substr(0,pos);
+    input.erase(0,pos+1);
+    map<char,expression>::iterator it;
+    for(it = themap.begin(); it != themap.end(); ++it)
+        indexCheck += (it->first);
+    if((pos = input.find_first_of(indexCheck)) < input.size())
+    {
+        if ((pos = input.find_first_of("'")) < input.size())
+        {
+            do{
+                derivativecount ++;
+                pos++;
+            }while((input.find_first_of("'",(pos))) < input.size());
+            pos = input.find_first_of(indexCheck);
+            temp = themap[input[pos]] % derivativecount;
+        }
+        pos = input.find_first_of("+-*'");
+        if (input[pos] == '+')
+        {
+            temp = themap[input[pos - 1]] + themap[input[pos + 1]];
+        }
+        else if (input[pos] == '-')
+        {
+            temp = themap[input[pos - 1]] - themap[input[pos +1 ]];
+        }
+        else if (input[pos] == '*')
+        {
+            temp = themap[input[pos - 1]] * themap[input[pos +1 ]];
+        }
+    }
+    else
+    {
+        temp << input;
+    }
+    themap[index[0]] = temp;
+    cout << index[0] << "=" << themap[index[0]] << endl;
+
+}
+
+void PrintHandle(string &input, string &index,map<char, expression> &themap)
+{
+    index = input;
+    if(IndexExist(index,themap))
+    {
+        cout << index[0] << "=" << themap[index[0]] << endl;
+    }
+    else
+    {
+        cout << "Index does not exist" << endl;
+        return;
+    }
+}
+
+fraction EvalHandle(string &input, string &index,map<char, expression> &themap)
+{
+    int posOpen = 0, posClose = 0, length;
+    fraction evalnum, result;
+    expression evalresult, temp;
+    index = input[0];
+    posOpen = input.find_first_of("(");
+    posClose = input.find_first_of(")");
+    length = ((posClose - 1) - (posOpen));
+    evalnum = fraction(input.substr((posOpen + 1) ,length));
+    temp = themap[index[0]];
+    result = temp ^ evalnum;
+    cout << input << " = "<< result << endl;
+
+    return result;
+}
+
 void trim(string &item)
 {
+    int pos = 0;
     while(item[0] == ' ')
         item.erase(0,1);
     while(item[item.size()-1] == ' ')
         item.erase(item.size()-1);
+    while((pos = item.find_first_of(" ")) < item.size())
+        item.erase(pos,1);
 }
 
-string getFileName(string title)
-{
-    string name;
-    cout<<title;
-    cin>>name;
-    cin.clear();
-    cin.ignore(255, '\n');
-    return name;
-}
-
-string getCommand(string &input)
-{
-    string instruction;
-    int pos = input.find_first_of(' ');
-    instruction = input.substr(0,pos);
-    input.erase(0,pos);
-    trim(instruction);
-    for (int i = 0; i < instruction.size(); i++)
-        instruction[i] = toupper(instruction[i]);
-    return instruction;
-}
-
-void loadMap(ifstream &in, map<char, expression> &themap)
-{
-    string temp, name, index;
-    int pos;
-    expression x;
-    name = getFileName("Please enter input file name: ");
-    openInput(name,in);
-    map<char,expression>::iterator i;
-
-    for(i= themap.begin(); i != themap.end(); ++i)
-    {
-        getline(in,temp);
-        index = getCommand(temp);
-        pos = temp.find_first_of('=');
-        temp.substr(pos+1, string::npos);
-        while(temp[0] == ' ' || temp[0] == '=')
-            temp.erase(0,1);
-        x<<temp;
-        themap[i->first] = x;
-        cout<<i->first<<" = "<<x<<endl;
-        x.clear();
-    }
-}
-
-void saveMap(ofstream &out, map<char, expression> &themap)
-{
-    string name;
-    name = getFileName("Please enter an output file name: ");
-    openOutput(".exp" ,name, out);
-    for (map<char,expression>::iterator i=themap.begin(); i!=themap.end(); ++i){
-        out<<i->first<<" = "<<i->second<<endl;
-    }
-
-}
-
-//void commmandLet(string input, string &index, string &expression, bool &valid)
-//{
-//    int pos;
-
-//    trim(input);
-//    pos = input.find_first_of(' ');
-//    index = input.substr(0, pos);
-//    input.erase(0,pos);
-//    trim(index);
-//    index[0] = toupper(index[0]);
-
-//    pos = input.find_first_of('=');
-//    expression = input.substr(pos+1, string::npos);
-//    trim(expression);
-//}
-
-//void commmandPrint(string input, string &index, bool &valid, map<char, expression> store)
-//{
-//    trim(input);
-//    index = input[0];
-//    index[0] = toupper(index[0]);
-//    cout << index << " = " << store[index[0]] << endl;
-
-
-void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstream &outFile, string &outName)
+void CommandLine(int argc, char *argv[], string &command,bool &recording, ifstream &inFile, string &inName, ofstream &outFile, string &outName, string &input, string &index, map<char, expression> &themap)
 {
     string temp;
     if (argc == 1)
@@ -215,8 +249,8 @@ void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstr
         }
         else
         {
-            outName = argv[1];
-            openOutput(".exp",outName, outFile);
+            inName = argv[1];
+            LoadHandle(inFile,inName, themap);
         }
 
     }
@@ -229,19 +263,19 @@ void CommandLine(int argc, char *argv[], ifstream &inFile, string &inName, ofstr
         }
         if (temp == "EXECUTE")
         {
-            outName = argv[2];
-            cout << outName;
-            cout << "Execute successfully read" << endl;
+            inName = argv[2];
+            ExecuteHandle(command,input, index, inFile, inName, outFile, outName , themap);
         }
         else if (temp == "RECORD")
         {
-            inName = argv[2];
-            cout << inName;
-            cout << "Record successfully read" << endl;
+            cout << "Successfuly Recording" << endl;
+            outName = argv[2];
+            openOutput(".spt",outName, outFile);
+            recording = true;
         }
         else
         {
-            cout << "Invalid first parameter";
+            cout << "Invalid first parameter" << endl;
             exit(1);
         }
     }
@@ -277,7 +311,7 @@ void openInput(const string &name, ifstream &in){
     }while(again);
 }
 
-void openOutput(const char *title, const string &name, ofstream &out){
+void openOutput(const char *title, string &name, ofstream &out){
     string extension, answer, temp;
     char c;
     ifstream in;
@@ -289,6 +323,7 @@ void openOutput(const char *title, const string &name, ofstream &out){
             extension = title;
     }
     temp = name + extension;
+    name = temp;
     in.open(temp.c_str());
 
     if(!in.fail())
@@ -315,32 +350,35 @@ void openOutput(const char *title, const string &name, ofstream &out){
     }
 }
 
-void initializeMap(map<char, expression> &map)
+void LoadHandle(ifstream &inFile, string &inName ,map<char, expression> &themap)
 {
-    map['A'];
-    map['B'];
-    map['C'];
-    map['D'];
-    map['E'];
-    map['F'];
-    map['G'];
-    map['H'];
-    map['I'];
-    map['J'];
-    map['K'];
-    map['L'];
-    map['M'];
-    map['N'];
-    map['O'];
-    map['P'];
-    map['Q'];
-    map['R'];
-    map['S'];
-    map['T'];
-    map['U'];
-    map['V'];
-    map['W'];
-    map['X'];
-    map['Y'];
-    map['Z'];
+    string temp, index;
+    openInput(inName, inFile);
+    while(getline(inFile,temp))
+    {
+        LetHandle(temp,index,themap);
+    }
+}
+
+void SaveHandle(ofstream &outFile, string &outName ,map<char, expression> &themap)
+{
+    openOutput(".exp",outName, outFile);
+    for (map<char,expression>::iterator i=themap.begin(); i!=themap.end(); ++i)
+        outFile<<i->first<<" = "<<i->second<<endl;
+}
+
+void ExecuteHandle(string &command, string &input, string &index, ifstream &inFile, string &inName,ofstream &outFile, string &outName ,map<char, expression> &themap)
+{
+    openInput(inName, inFile);
+    while(getline(inFile, input))
+    {
+        cout << input << endl;
+        command = CommandCheck(input);
+        HandleCommands(command,input,index, inFile, inName, outFile, outName, themap);
+    }
+}
+
+void RecordHandle(ofstream &outFile, string &input)
+{
+    outFile << input << endl;
 }

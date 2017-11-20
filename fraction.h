@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ class fraction
         fraction(int n, int d); //The "two argument" constructor
         fraction(int whole, int n, int d); //Three argument constructor
         fraction(double x);
+        fraction(string &input);
     //Destructor
         ~fraction(); //Destructor
     //Copy constructor
@@ -31,9 +33,7 @@ class fraction
         fraction& operator/=(const fraction &other);//divides someone to me
     //Class member operators
         fraction operator-() const; //Make the fraction negative
-        fraction operator^(int x); //Return the inverse of the fraction
     //Coversion
-        double toDouble();
     //Accessor functions
         int getNum() const;
         int getDenom() const;
@@ -42,6 +42,11 @@ class fraction
     //Display function
         void display();
 
+        friend
+        double toDouble(fraction &makedub); //located in normal fraction.cpp
+
+        friend
+        fraction operator^(fraction &cof, fraction &po); //in fraction.cpp
 
         friend
         istream& operator>>(istream &in, fraction &me);

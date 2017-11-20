@@ -29,21 +29,7 @@ struct term
     }
 };
 
-class Term
-{
-    private:
-    string e;
-    string c;
-    string v;
-    string p;
 
-    public:
-
-    Term();
-
-    void init(const string &strTerm);
-    float evaluate(string val);
-};
 
 class expression
 {
@@ -52,66 +38,67 @@ class expression
         expression(const expression &other);
         ~expression();                        //Deconstructor
 
-        expression(const string  &infix); // Used for maps
+        expression(string &ExpStore); // Used for maps
 
         expression& operator=(const expression &other);
+
+
+
         expression& operator<<(const string &input);
+//        expression& operator<<(expression &exp);
+
+        void clear();
+//        expression& derivative(unsigned int x = 1);
+
+        fraction evaluateAt(const fraction &value);
+        void tokenize();
         void Nocoeffcheck(string &token);
         void vectorizetokens();
-        void clear();
-//      bool goodExpression();
-        expression& derivative(unsigned int x = 1);
-//        fraction evaluateAt(const fraction &value);
+        bool Negativecheck(fraction &c);
 
-//        friend
-//        ostream& operator<<(ostream &out, const expression &exp);
+        friend
+        ostream& operator<<(ostream &out, expression &exp);
 
-//        friend
-//        istream& operator>>(istream &in, expression &exp);
+        friend
+        fraction operator^(expression &expres, fraction &evalnum);
+
+        friend
+        istream& operator>>(istream &in, expression &exp);
+
+        //Expression addition/sub/mult for test
+
+        friend
+        expression operator+(expression &a, expression &b);
+
+        friend
+        expression operator-(expression &a, expression &b);
+
+        friend
+        expression operator*(expression &a, expression &b);
+
+        friend
+        expression operator % (expression &a, unsigned int x);
+
 
     private:
-        //string expressionToStore;   //dont think I need this
         vector<term> terms;
         vector<string> tokens;
-        string inFix,postFix, operators;
+        string ExpressionStore;
         map<string, int> precedence;
-        void loadMaps();
+//        void loadMaps();
         void copy(const expression &other);
-        bool isOperator(const string &token) const;
-        void tokenize();
+//        bool isOperator(const string &token) const;
         void trim(string &item);
         void Destroy();  //still needs to be fixed
+        void consolidateExpression();
+        void maketerms(const string &input);
+        void makeNeg(); //Makes expression negative
+
 };
 
-class Character {
-    public:
-    static bool isDigit(char c) {
-        return (isdigit(c) || (c=='-') || (c=='.'));
-    }
-    static bool isCharacter(char c) {
-        return isalpha(c);
-    }
-    static bool isPower(char c) {
-        return c == '^';
-    }
-};
 
-class estack : public std::stack<string> {
-public:
-    using std::stack<string>::c; // expose the container
-};
 
-class Expression {
-    public:
-    string e;      // original expression
-    estack postfix; // parsed to postfix notation
-    Expression();
-    void init(string expr);
-    int priority(string oprtr);
-    bool isOperator(string oprtr);
-    float compute(string oprtr, string lOprnd, string rOprnd, string vValue);
-    string evaluate(string vValue);
-    void infixToPostfix();
-};
+
+
 
 #endif // EXPRESSION_H

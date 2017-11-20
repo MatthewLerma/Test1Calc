@@ -1,5 +1,7 @@
 #include "fraction.h"
 
+
+
 ostream& operator<<(ostream &out, const fraction &me)
 {
     out<<me.num;

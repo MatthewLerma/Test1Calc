@@ -20,20 +20,57 @@ fraction::fraction(int n, int d) //The "two argument" constructor
 }
 
 
-fraction::fraction(double x)
+fraction::fraction(double x)  //not properly handeling doubles
 {
-    int tempNum = (int)x, temp = 0;
-    double frac = x - tempNum;
-    int power = 1;
-    while(frac != 0)
-    {
-        temp *= 10 + (int)(frac * 10);
-        frac = frac*10 - (int)(frac * 10);
-        power *= 10;
-    }
-    num = tempNum * power + temp;
+    int pos = 0, power;
+    string temp, lengthtest;
+    stringstream ss;
+    ss << x;
+    getline(ss,temp);
+    ss.str("");
+    ss.clear();
+    lengthtest = temp.substr((pos = temp.find(".")));
+    power = pow(10,lengthtest.size());
+    num = x * power;
     denom = power;
     reduce();
+}
+
+fraction::fraction(string &input)
+{
+    int pos = 0, n=0, d=0;
+    stringstream temp;
+    double dubinput;
+    if((pos=input.find_first_of("."))<input.size())
+    {
+        temp << input;
+        temp >> dubinput;
+        temp.str("");
+        temp.clear();
+        *this = dubinput;
+    }
+    else if((pos=input.find_first_of("/"))<input.size())
+    {
+        temp << input.substr(0,pos);
+        temp >> n;
+        temp.str("");
+        temp.clear();
+        temp << input.substr(pos + 1);
+        temp >> d;
+        temp.str("");
+        temp.clear();
+        num = n;
+        denom = d;
+    }
+    else
+    {
+        temp << input;
+        temp >> n;
+        temp.str("");
+        temp.clear();
+        num = n;
+        denom = 1;
+    }
 }
 
 fraction::~fraction() //Destructor
@@ -96,15 +133,21 @@ fraction fraction::operator-() const
     return c;
 }
 
-//fraction fraction::operator^(int x)
-//{
-//
-//}
-//
-//double fraction::toDouble()
-//{
-//
-//}
+fraction operator^(fraction &cof, fraction &po)
+{
+    double newpow;
+    newpow = toDouble(po);
+    cof.num = pow(cof.num,newpow);
+    if(!(cof.denom == 0))
+        cof.denom = pow(cof.denom,newpow);
+    return cof;
+}
+
+double toDouble(fraction &makedub)
+{
+    double n = makedub.num,d = makedub.denom;
+    return (n/d);
+}
 
 int fraction::getNum() const
 {
@@ -144,3 +187,5 @@ void fraction::reduce()
         denom = -denom;
     }
 }
+
+
