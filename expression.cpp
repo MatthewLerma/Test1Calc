@@ -117,6 +117,7 @@ expression& expression::operator<<(const string &input)
 void expression::vectorizetokens()
 {
     int pos = 0;
+    double test;
     fraction co, po;
     stringstream ss;
     for (unsigned int i = 0; i < tokens.size(); ++i)
@@ -134,24 +135,14 @@ void expression::vectorizetokens()
             Nocoeffcheck(tokens[i]);
             if((pos = tokens[i].find("^")) < tokens[i].size())
             {
-                ss << tokens[i].substr(0,pos);
-                ss >> co;
-                ss.str("");
-                ss.clear();
-                ss << tokens[i].substr(pos+1);
-                ss >> po;
-                ss.str("");
-                ss.clear();
+                co = fraction(tokens[i].substr(0,pos));
+                po = fraction(tokens[i].substr(pos+1));
                 pos = 0;
                 terms.push_back(term(co,po));
             }
             else
             {
-                pos = tokens[i].find("X", pos);
-                ss << tokens[i].substr(0,pos);
-                ss >> co;
-                ss.str("");
-                ss.clear();
+                co = fraction(tokens[i].substr(0,pos));
                 po = 1;
                 pos = 0;
                 terms.push_back(term(co,po));
@@ -160,10 +151,7 @@ void expression::vectorizetokens()
         }
         else if ((pos = tokens[i].find("X", pos)) > tokens[i].size())
         {
-            ss << tokens[i];
-            ss >> co;
-            ss.str("");
-            ss.clear();
+            co = fraction(tokens[i]);
             po = 0;
             pos = 0;
             terms.push_back(term(co,po));
@@ -191,7 +179,8 @@ ostream& operator<<(ostream &out, expression &exp)
             {
                 if (!(exp.Negativecheck(exp.terms[i + 1].coef)))
                 {
-                    out << "+";
+                    if (exp.terms[i + 1].coef != 0)
+                        out << "+";
                 }
             }
         }

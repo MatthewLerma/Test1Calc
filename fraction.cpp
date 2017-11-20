@@ -20,17 +20,20 @@ fraction::fraction(int n, int d) //The "two argument" constructor
 }
 
 
-fraction::fraction(double x)  //not properly handeling doubles
+fraction::fraction(double x)
 {
-    int pos = 0, power;
+    int pos = 0, power = 1;
     string temp, lengthtest;
     stringstream ss;
     ss << x;
     getline(ss,temp);
     ss.str("");
     ss.clear();
-    lengthtest = temp.substr((pos = temp.find(".")));
-    power = pow(10,lengthtest.size());
+    if(pos = temp.find(".") < temp.size())
+    {
+        lengthtest = temp.substr((pos = temp.find(".")));
+        power = pow(10,lengthtest.size());
+    }
     num = x * power;
     denom = power;
     reduce();

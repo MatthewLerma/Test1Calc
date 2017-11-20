@@ -170,7 +170,7 @@ void LetHandle(string &input, string &index,map<char, expression> &themap)
     }
     else
     {
-        temp << input;
+        temp << input; //Loses fraction
     }
     themap[index[0]] = temp;
     cout << index[0] << "=" << themap[index[0]] << endl;
